@@ -17,17 +17,6 @@ class DetailLayananResource extends Resource
 {
     protected static ?string $model = DetailLayanan::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-
-    public static function getNavigationLabel(): string
-    {
-        return 'Detail Layanan';
-    }
-    public static function getNavigationGroup(): ?string
-    {
-        return 'Layanan';
-    }
-
     public static function form(Form $form): Form
     {
         return $form

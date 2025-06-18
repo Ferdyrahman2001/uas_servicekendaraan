@@ -17,17 +17,6 @@ class MontirResource extends Resource
 {
     protected static ?string $model = Montir::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-
-    public static function getNavigationLabel(): string
-    {
-        return 'Montir';
-    }
-    public static function getNavigationGroup(): ?string
-    {
-        return 'Master Data';
-    }
-
     public static function form(Form $form): Form
     {
         return $form
@@ -57,6 +46,15 @@ class MontirResource extends Resource
                     ->required()
                     ->options(\App\Models\KategoriMontir::pluck('nama', 'id'))
                     ->searchable(),
+                Forms\Components\FileUpload::make('foto')
+                    ->label('Foto')
+                    ->disk('public')
+                    ->directory('montir')
+                    ->image()
+                    ->imagePreviewHeight('100')
+                    ->maxSize(2048)
+                    ->acceptedFileTypes(['image/*'])
+                    ->nullable(),
             ]);
     }
 
@@ -79,6 +77,13 @@ class MontirResource extends Resource
                 Tables\Columns\TextColumn::make('kategori_montir_id')
                     ->numeric()
                     ->sortable(),
+                Tables\Columns\ImageColumn::make('foto') // nama kolom di database
+                    ->label('Foto')
+                    ->disk('public') // sesuai disk di config/filesystems.php
+                    ->defaultImageUrl(asset('img/user.png'))
+                    ->height(50)
+                    ->width(50)
+                    ->circular(), // opsional: tampilkan sebagai lingkaran
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -88,6 +93,7 @@ class MontirResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+            ->recordUrl(fn($record): ?string => null)
             ->filters([
                 //
             ])

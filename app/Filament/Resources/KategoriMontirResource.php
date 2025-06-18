@@ -17,18 +17,6 @@ class KategoriMontirResource extends Resource
 {
     protected static ?string $model = KategoriMontir::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-
-    public static function getNavigationLabel(): string
-    {
-        return 'Kategori Montir';
-    }
-    public static function getNavigationGroup(): ?string
-    {
-        return 'Master Data';
-    }
-
-
     public static function form(Form $form): Form
     {
         return $form
