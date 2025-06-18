@@ -16,10 +16,13 @@ return new class extends Migration
             $table->string('kode')->unique();
             $table->string('nama');
             $table->string('deskripsi')->nullable();
+            $table->string('nomor_polisi');
+            $table->string('foto_kendaraan');
+            $table->enum('jenis_kendaraan', ['motor', 'mobil']);
+            $table->enum('status', ['pending', 'proses', 'selesai', 'batal']);
+            $table->integer('jumlah_bayar');
             $table->decimal('total_biaya', 15, 2)->default(0);
             $table->smallInteger('rating')->default(0);
-            $table->unsignedBigInteger('jenis_layanan_id');
-            $table->foreign('jenis_layanan_id')->references('id')->on('jenis_layanan')->onDelete('cascade');
             $table->timestamps();
         });
     }

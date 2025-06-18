@@ -23,23 +23,9 @@ class KategoriMontirResource extends Resource
     {
         return 'Kategori Montir';
     }
-
-    public static function getPluralModelLabel(): string
-    {
-        return 'Kategori Montir';
-    }
-
-    public static function getModelLabel(): string
-    {
-        return 'Kategori Montir';
-    }
     public static function getNavigationGroup(): ?string
     {
         return 'Master Data';
-    }
-    public static function getGloballySearchableAttributes(): array
-    {
-        return ['nama'];
     }
 
 

@@ -19,6 +19,7 @@ return new class extends Migration
             $table->date('tgl_lahir');
             $table->string('tmp_lahir');
             $table->string('keahlian');
+            $table->string('foto')->nullable();
             $table->unsignedBigInteger('kategori_montir_id');
             $table->foreign('kategori_montir_id')->references('id')->on('kategori_montir')->onDelete('cascade');
             $table->timestamps();
