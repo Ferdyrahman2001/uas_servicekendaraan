@@ -12,6 +12,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Auth;
 
 class LayananResource extends Resource
 {
@@ -109,5 +110,16 @@ class LayananResource extends Resource
             'create' => Pages\CreateLayanan::route('/create'),
             'edit' => Pages\EditLayanan::route('/{record}/edit'),
         ];
+    }
+
+    //* Authorization
+    static function can(string $action, ?\Illuminate\Database\Eloquent\Model $record = null): bool
+    {
+        $user = Auth::user();
+
+        if (!$user) return false;
+
+        // Allow all
+        return $user && true;
     }
 }

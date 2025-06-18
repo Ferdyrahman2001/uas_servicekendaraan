@@ -90,4 +90,15 @@ class JenisLayananResource extends Resource
             'edit' => Pages\EditJenisLayanan::route('/{record}/edit'),
         ];
     }
+
+    //* Authorization
+    static function can(string $action, ?\Illuminate\Database\Eloquent\Model $record = null): bool
+    {
+        $user = \Illuminate\Support\Facades\Auth::user();
+
+        if (!$user) return false;
+
+        // Allow all
+        return $user && $user->role === 'admin';
+    }
 }

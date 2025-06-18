@@ -3,15 +3,15 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\MontirResource\Pages;
-use App\Filament\Resources\MontirResource\RelationManagers;
 use App\Models\Montir;
 use Filament\Forms;
 use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Resources\Resource;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Support\Facades\Auth;
 
 class MontirResource extends Resource
 {
@@ -115,5 +115,19 @@ class MontirResource extends Resource
             'create' => Pages\CreateMontir::route('/create'),
             'edit' => Pages\EditMontir::route('/{record}/edit'),
         ];
+    }
+
+    //* Authorization
+    static function can(string $action, ?Model $record = null): bool
+    {
+        $user = Auth::user();
+
+        if (!$user) return false;
+
+        return match ($action) {
+            'viewAny', 'view' => in_array($user->role, ['admin', 'manager']),
+            'create', 'update', 'delete' => in_array($user->role, ['admin', 'manager']),
+            default => parent::can($action, $record),
+        };
     }
 }

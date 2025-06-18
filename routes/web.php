@@ -18,10 +18,3 @@ Route::get('/', function () {
     add status enum('pending', 'proses', 'selesai', 'batal')
     add jumlah_bayar int
 */
-/* 
-
-    TODO: Role Permission
-    todo: Manager (montir, layanan)
-    todo: Admin (users, montir, layanan, jenis_layanan, kategori_montir)
-    todo: Montir (layanan)
-*/
