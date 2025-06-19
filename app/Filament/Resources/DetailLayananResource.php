@@ -19,9 +19,25 @@ class DetailLayananResource extends Resource
 
     public static function form(Form $form): Form
     {
+        // Get layanan_id from the request if available
+        $layananId = request()->get('layanan_id');
+
         return $form
             ->schema([
-                //
+                Forms\Components\TextInput::make('pekerjaan')
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('biaya')
+                    ->numeric()
+                    ->required()
+                    ->default(0),
+                Forms\Components\Select::make('layanan_id')
+                    ->relationship('layanan', 'nama')
+                    ->required()
+                    ->default($layananId), // Prefill if available
+                Forms\Components\Select::make('montir_id')
+                    ->relationship('montir', 'nama')
+                    ->required(),
             ]);
     }
 
@@ -29,7 +45,10 @@ class DetailLayananResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('pekerjaan')->label('Pekerjaan'),
+                Tables\Columns\TextColumn::make('biaya')->label('Biaya')->money('IDR', true),
+                Tables\Columns\TextColumn::make('layanan.nama')->label('Layanan'),
+                Tables\Columns\TextColumn::make('montir.nama')->label('Montir'),
             ])
             ->filters([
                 //

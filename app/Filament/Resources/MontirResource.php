@@ -66,7 +66,9 @@ class MontirResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('nama')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('gender'),
+                Tables\Columns\TextColumn::make('gender')
+                    ->label('Gender')
+                    ->formatStateUsing(fn ($state) => $state === 'L' ? 'Laki-Laki' : 'Perempuan'),
                 Tables\Columns\TextColumn::make('tgl_lahir')
                     ->date()
                     ->sortable(),
@@ -74,9 +76,10 @@ class MontirResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('keahlian')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('kategori_montir_id')
-                    ->numeric()
-                    ->sortable(),
+                Tables\Columns\TextColumn::make('kategoriMontir.nama')
+                    ->label('Kategori Montir')
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\ImageColumn::make('foto') // nama kolom di database
                     ->label('Foto')
                     ->disk('public') // sesuai disk di config/filesystems.php

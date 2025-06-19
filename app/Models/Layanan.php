@@ -8,4 +8,9 @@ class Layanan extends Model
 {
     protected $table = 'layanan';
     protected $guarded = [];
+
+    public function detailLayanans()
+    {
+        return $this->hasMany(DetailLayanan::class, 'layanan_id');
+    }
 }

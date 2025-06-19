@@ -19,8 +19,8 @@ return new class extends Migration
             $table->string('nomor_polisi');
             $table->string('foto_kendaraan');
             $table->enum('jenis_kendaraan', ['motor', 'mobil']);
-            $table->enum('status', ['pending', 'proses', 'selesai', 'batal']);
-            $table->integer('jumlah_bayar');
+            $table->enum('status', ['pending', 'proses', 'selesai', 'batal'])->default('pending');
+            $table->integer('jumlah_bayar')->default(0);
             $table->decimal('total_biaya', 15, 2)->default(0);
             $table->smallInteger('rating')->default(0);
             $table->timestamps();

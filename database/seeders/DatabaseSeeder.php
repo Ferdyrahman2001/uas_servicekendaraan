@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\JenisLayanan;
 use App\Models\KategoriMontir;
 use App\Models\Montir;
 use App\Models\User;
@@ -38,6 +37,30 @@ class DatabaseSeeder extends Seeder
             ['nama' => 'Umum', 'created_at' => now(), 'updated_at' => now()],
             ['nama' => 'Spesialis Mesin', 'created_at' => now(), 'updated_at' => now()],
             ['nama' => 'Spesialis Kelistrikan', 'created_at' => now(), 'updated_at' => now()],
+        ]);
+
+        Montir::query()->delete(); // Clear existing records before seeding
+        Montir::insert([
+            [
+                'nomor' => 'M001',
+                'nama' => 'Abdul Rahman',
+                'gender' => 'L',
+                'tgl_lahir' => '1990-01-01',
+                'tmp_lahir' => 'Jakarta',
+                'keahlian' => 'Servis Umum',
+                'foto' => null,
+                'kategori_montir_id' => KategoriMontir::where('nama', 'Umum')->first()->id,
+            ],
+            [
+                'nomor' => 'M002',
+                'nama' => 'Siti Aminah',
+                'gender' => 'P',
+                'tgl_lahir' => '1995-05-05',
+                'tmp_lahir' => 'Bandung',
+                'keahlian' => 'Servis Spesialis',
+                'foto' => null,
+                'kategori_montir_id' => KategoriMontir::where('nama', 'Spesialis Mesin')->first()->id,
+            ]
         ]);
     }
 }

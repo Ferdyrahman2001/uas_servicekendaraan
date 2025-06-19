@@ -30,17 +30,44 @@ class LayananResource extends Resource
                     ->maxLength(255),
                 Forms\Components\TextInput::make('deskripsi')
                     ->maxLength(255),
+                Forms\Components\TextInput::make('nomor_polisi')
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\FileUpload::make('foto_kendaraan')
+                    ->image()
+                    ->directory('foto_kendaraan')
+                    ->maxSize(2048) // 2MB
+                    ->acceptedFileTypes(['image/*'])
+                    ->required(),
+                Forms\Components\Select::make('jenis_kendaraan')
+                    ->required()
+                    ->options([
+                        'motor' => 'Motor',
+                        'mobil' => 'Mobil',
+                    ]),
+                Forms\Components\Select::make('status')
+                    ->required()
+                    ->live()
+                    ->options([
+                        'pending' => 'Pending',
+                        'proses' => 'Proses',
+                        'selesai' => 'Selesai',
+                        'batal' => 'Batal',
+                    ]),
+                Forms\Components\TextInput::make('jumlah_bayar')
+                    ->required(fn($get) => $get('status') === 'selesai')
+                    ->numeric()
+                    ->visible(fn($get) => $get('status') === 'selesai'),
                 Forms\Components\TextInput::make('total_biaya')
-                    ->required()
+                    ->required(fn($get) => $get('status') === 'selesai')
                     ->numeric()
-                    ->default(0.00),
+                    ->default(0.00)
+                    ->visible(fn($get) => $get('status') === 'selesai'),
                 Forms\Components\TextInput::make('rating')
-                    ->required()
+                    ->required(fn($get) => $get('status') === 'selesai')
                     ->numeric()
-                    ->default(0),
-                Forms\Components\TextInput::make('jenis_layanan_id')
-                    ->required()
-                    ->numeric(),
+                    ->default(0)
+                    ->visible(fn($get) => $get('status') === 'selesai'),
             ]);
     }
 
@@ -54,15 +81,31 @@ class LayananResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('deskripsi')
                     ->searchable(),
+                Tables\Columns\TextColumn::make('nomor_polisi')
+                    ->searchable(),
+                Tables\Columns\ImageColumn::make('foto_kendaraan')
+                    ->circular()
+                    ->limit(3),
+                Tables\Columns\TextColumn::make('jenis_kendaraan')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('status')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('jumlah_bayar')
+                    ->numeric()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('total_biaya')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('rating')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('jenis_layanan_id')
-                    ->numeric()
-                    ->sortable(),
+                Tables\Columns\TextColumn::make('id')
+                    ->label('Detail')
+                    ->formatStateUsing(function ($state, $record) {
+                        return '<a href="/admin/detail-layanans/create?layanan_id=' . $record->id . '" class="text-primary underline">Tambah Detail</a>';
+                    })
+                    ->html(),
+                    // TODO: Lanjutkan disini
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -72,6 +115,7 @@ class LayananResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+            ->recordUrl(fn($record): ?string => null)
             ->filters([
                 //
             ])

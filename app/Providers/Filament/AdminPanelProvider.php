@@ -103,11 +103,6 @@ class AdminPanelProvider extends PanelProvider
                             ->url(route('filament.admin.resources.montirs.index'))
                             ->isActiveWhen(fn(): bool => request()->routeIs('filament.admin.resources.montirs.*')),
 
-                        NavigationItem::make('Jenis Layanan')
-                            ->icon('heroicon-o-rectangle-stack')
-                            ->url(route('filament.admin.resources.jenis-layanans.index'))
-                            ->isActiveWhen(fn(): bool => request()->routeIs('filament.admin.resources.jenis-layanans.*')),
-
                         NavigationItem::make('Kategori Montir')
                             ->icon('heroicon-o-briefcase')
                             ->url(route('filament.admin.resources.kategori-montirs.index'))
