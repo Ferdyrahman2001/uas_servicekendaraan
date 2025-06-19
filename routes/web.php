@@ -1,13 +1,20 @@
 <?php
 
+use App\Models\DetailLayanan;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    // Ambil 10 detail layanan terakhir dengan relasi
+    $latestServices = DetailLayanan::with(['layanan', 'montir'])
+        ->latest()
+        ->take(10)
+        ->get();
+
+    return view('welcome', compact('latestServices'));
 });
 
 // TODO: Registrasi (users crud)  ✅
-// TODO: Landing Page menampilkan layanan yang tersedia
+// TODO: Landing Page menampilkan layanan yang tersedia ✅
 // TODO: Flow Layanan dan Detail Layanan ✅
 /* 
 

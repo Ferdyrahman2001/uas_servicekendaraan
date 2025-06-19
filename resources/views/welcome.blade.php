@@ -46,10 +46,39 @@
             </a>
         </div>
         <div class="md:w-1/2 mt-10 md:mt-0">
-            <img src="{{ asset('img/bengkel.jpg') }}" alt="Servis Kendaraan"
-                class="rounded-lg shadow-md w-full h-auto">
+            <img src="{{ asset('img/bengkel.jpg') }}" alt="Servis Kendaraan" class="rounded-lg shadow-md w-full h-auto">
         </div>
     </main>
+
+    {{-- Menampilkan Service Terkini --}}
+    <section class="py-12 bg-gray-50 dark:bg-gray-800">
+        <div class="max-w-6xl mx-auto px-6">
+            <h2 class="text-2xl font-bold mb-6 text-gray-800 dark:text-white">🔧 Service Terkini</h2>
+
+            @if ($latestServices->isEmpty())
+            <p class="text-gray-500 dark:text-gray-400">Belum ada data layanan.</p>
+            @else
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                @foreach ($latestServices as $detail)
+                <div
+                    class="bg-white dark:bg-gray-900 p-5 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+                    <h3 class="font-semibold text-gray-800 dark:text-gray-200">{{ $detail->pekerjaan }}</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                        Layanan: {{ optional($detail->layanan)->kode ?? '-' }} -
+                        {{ optional($detail->layanan)->nama ?? '-' }}
+                    </p>
+                    <p class="text-sm text-gray-600 dark:text-gray-400">
+                        Montir: {{ optional($detail->montir)->nama ?? '-' }}
+                    </p>
+                    <p class="mt-2 text-green-600 dark:text-green-400 font-medium">
+                        Biaya: Rp{{ number_format($detail->biaya, 0, ',', '.') }}
+                    </p>
+                </div>
+                @endforeach
+            </div>
+            @endif
+        </div>
+    </section>
 
     <footer class="text-center text-sm py-6 text-gray-500 dark:text-gray-400">
         &copy; {{ date('Y') }} ServiceKuy. All rights reserved.
