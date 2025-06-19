@@ -91,7 +91,7 @@ class LayananResource extends Resource
                     ->dehydrated()
                     ->default(0)
                     ->prefix('Rp'),
-                    
+
                 TextInput::make('jumlah_bayar')
                     ->numeric()
                     ->default(0)
@@ -157,12 +157,16 @@ class LayananResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('status')
                     ->sortable(),
-                TextColumn::make('detail_layanans_count')
-                    ->label('Jumlah Layanan')
+                Tables\Columns\TextColumn::make('detail_layanans_count')
+                    ->label('Details')
                     ->badge()
-                    ->alignCenter()
                     ->color('primary')
-                    ->sortable(), // Added sortable since you're using withCount()
+                    ->sortable()
+                    ->url(fn($record): string => route('filament.admin.resources.detail-layanans.index', [
+                        'tableFilters' => [
+                            'layanan_id' => ['layanan_id' => $record->id],
+                        ],
+                    ])),
                 Tables\Columns\TextColumn::make('total_biaya')
                     ->numeric()
                     ->money('IDR')

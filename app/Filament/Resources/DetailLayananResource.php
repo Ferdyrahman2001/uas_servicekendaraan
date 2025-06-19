@@ -11,6 +11,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Tables\Filters\Filter;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class DetailLayananResource extends Resource
@@ -47,14 +48,32 @@ class DetailLayananResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('pekerjaan')->label('Pekerjaan'),
                 Tables\Columns\TextColumn::make('biaya')->label('Biaya')->money('IDR', true),
-                Tables\Columns\TextColumn::make('layanan.nama')->label('Layanan'),
+                Tables\Columns\TextColumn::make('layanan')
+                    ->label('Layanan')
+                    ->formatStateUsing(fn($record) => $record->layanan ? "{$record->layanan->kode} - {$record->layanan->nama}" : '-')
+                    ->url(fn($record) => $record->layanan ? route('filament.admin.resources.layanans.edit', ['record' => $record->layanan->id]) : null)
+                    ->openUrlInNewTab(),
                 Tables\Columns\TextColumn::make('montir.nama')->label('Montir'),
             ])
+            ->recordUrl(fn($record): ?string => null)
             ->filters([
-                //
+                Filter::make('layanan_id')
+                    ->form([
+                        Forms\Components\Select::make('layanan_id')
+                            ->relationship('layanan', 'kode')
+                            ->searchable()
+                            ->preload()
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['layanan_id'],
+                                fn(Builder $query, $layananId): Builder => $query->where('layanan_id', $layananId),
+                            );
+                    })
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                // Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -74,9 +93,14 @@ class DetailLayananResource extends Resource
     {
         return [
             'index' => Pages\ListDetailLayanans::route('/'),
-            'create' => Pages\CreateDetailLayanan::route('/create'),
-            'edit' => Pages\EditDetailLayanan::route('/{record}/edit'),
+            // 'create' => Pages\CreateDetailLayanan::route('/create'),
+            // 'edit' => Pages\EditDetailLayanan::route('/{record}/edit'),
         ];
+    }
+
+    public static function canCreate(): bool
+    {
+        return false; // ⬅️ Nonaktifkan pembuatan dari semua tempat
     }
 
     //* Authorization
