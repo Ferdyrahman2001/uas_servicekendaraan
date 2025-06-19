@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class DetailLayanan extends Model
 {
@@ -11,11 +12,11 @@ class DetailLayanan extends Model
 
     public function layanan()
     {
-        return $this->belongsTo(Layanan::class, 'layanan_id');
+        return $this->belongsTo(Layanan::class);
     }
 
     public function montir()
     {
-        return $this->belongsTo(Montir::class, 'montir_id');
+        return $this->belongsTo(Montir::class);
     }
 }

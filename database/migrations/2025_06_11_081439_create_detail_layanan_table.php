@@ -14,11 +14,9 @@ return new class extends Migration
         Schema::create('detail_layanan', function (Blueprint $table) {
             $table->id();
             $table->string('pekerjaan');
-            $table->double('biaya')->default(0);
-            $table->unsignedBigInteger('layanan_id');
-            $table->foreign('layanan_id')->references('id')->on('layanan')->onDelete('cascade');
-            $table->unsignedBigInteger('montir_id');
-            $table->foreign('montir_id')->references('id')->on('montir')->onDelete('cascade');
+            $table->decimal('biaya', 15, 2);
+            $table->foreignId('layanan_id')->constrained();
+            $table->foreignId('montir_id')->constrained('montir');
             $table->timestamps();
         });
     }

@@ -6,6 +6,7 @@ use App\Filament\Resources\LayananResource;
 use Filament\Actions;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
+use Illuminate\Database\Eloquent\Model;
 
 class CreateLayanan extends CreateRecord
 {
@@ -13,10 +14,6 @@ class CreateLayanan extends CreateRecord
 
     protected function getRedirectUrl(): string
     {
-        if ($this->record->status !== 'selesai') {
-            return '/admin/detail-layanans/create?layanan_id=' . $this->record->id;
-        }
-
         return $this->getResource()::getUrl('index');
     }
 

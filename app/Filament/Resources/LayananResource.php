@@ -6,13 +6,22 @@ use App\Filament\Resources\LayananResource\Pages;
 use App\Filament\Resources\LayananResource\RelationManagers;
 use App\Models\Layanan;
 use Filament\Forms;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\TextInput\Mask;
 use Filament\Forms\Form;
+use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Number;
 
 class LayananResource extends Resource
 {
@@ -22,58 +31,116 @@ class LayananResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('kode')
+                TextInput::make('kode')
                     ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('nama')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('deskripsi')
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('nomor_polisi')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\FileUpload::make('foto_kendaraan')
+                    ->unique(ignoreRecord: true),
+
+                TextInput::make('nama')
+                    ->required(),
+
+                TextInput::make('deskripsi'),
+
+                TextInput::make('nomor_polisi')
+                    ->required(),
+
+                FileUpload::make('foto_kendaraan')
                     ->image()
                     ->directory('foto_kendaraan')
-                    ->maxSize(2048) // 2MB
-                    ->acceptedFileTypes(['image/*'])
                     ->required(),
-                Forms\Components\Select::make('jenis_kendaraan')
-                    ->required()
+
+                Select::make('jenis_kendaraan')
                     ->options([
                         'motor' => 'Motor',
                         'mobil' => 'Mobil',
-                    ]),
-                Forms\Components\Select::make('status')
+                    ])
+                    ->required(),
+
+                // Repeater for detail layanan
+                Repeater::make('detailLayanans')
+                    ->relationship()
+                    ->schema([
+                        TextInput::make('pekerjaan')
+                            ->required(),
+
+                        TextInput::make('biaya')
+                            ->numeric()
+                            ->default(0)
+                            ->required(),
+
+                        Select::make('montir_id')
+                            ->label('Montir')
+                            ->relationship('montir', 'nama')
+                            ->searchable()
+                            ->preload()
+                            ->required(),
+                    ])
+                    ->columnSpanFull()
+                    ->columns(3)
+                    ->label('Detail Layanan')
+                    ->addActionLabel('Tambah Detail Layanan')
+                    ->afterStateUpdated(function ($state, callable $set) {
+                        $total = collect($state)->sum(function ($item) {
+                            return $item['biaya'] ?? 0;
+                        });
+                        $set('total_biaya', $total);
+                    })
+                    ->live(debounce: 500),
+
+                TextInput::make('total_biaya')
+                    ->disabled()
+                    ->dehydrated()
+                    ->default(0)
+                    ->prefix('Rp'),
+                    
+                TextInput::make('jumlah_bayar')
+                    ->numeric()
+                    ->default(0)
                     ->required()
-                    ->live()
+                    ->prefix('Rp')
+                    ->rules([
+                        function ($get) {
+                            return function (string $attribute, $value, $fail) use ($get) {
+                                $totalBiaya = (float) str_replace(',', '', $get('total_biaya'));
+                                if ((float) $value < $totalBiaya) {
+                                    $fail('Jumlah bayar harus lebih besar atau sama dengan total biaya.');
+                                }
+                            };
+                        }
+                    ])
+                    ->live(),
+
+                Select::make('status')
                     ->options([
                         'pending' => 'Pending',
                         'proses' => 'Proses',
                         'selesai' => 'Selesai',
                         'batal' => 'Batal',
-                    ]),
-                Forms\Components\TextInput::make('jumlah_bayar')
-                    ->required(fn($get) => $get('status') === 'selesai')
+                    ])
+                    ->default('pending')
+                    ->live()
+                    ->afterStateUpdated(function ($state, Set $set) {
+                        if ($state !== 'selesai') $set('rating', 0);
+                    }),
+
+                TextInput::make('rating')
                     ->numeric()
-                    ->visible(fn($get) => $get('status') === 'selesai'),
-                Forms\Components\TextInput::make('total_biaya')
-                    ->required(fn($get) => $get('status') === 'selesai')
-                    ->numeric()
-                    ->default(0.00)
-                    ->visible(fn($get) => $get('status') === 'selesai'),
-                Forms\Components\TextInput::make('rating')
-                    ->required(fn($get) => $get('status') === 'selesai')
-                    ->numeric()
+                    ->minValue(0)
+                    ->maxValue(5)
                     ->default(0)
-                    ->visible(fn($get) => $get('status') === 'selesai'),
+                    ->required()
+                    ->visible(fn($get) => $get('status') === 'selesai')
+
             ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
+            ->query(
+                Layanan::query()
+                    ->withCount('detailLayanans') // Preload count
+                    ->with(['detailLayanans', 'detailLayanans.montir']) // Preload relationships
+            )
             ->columns([
                 Tables\Columns\TextColumn::make('kode')
                     ->searchable(),
@@ -90,22 +157,31 @@ class LayananResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('status')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('jumlah_bayar')
-                    ->numeric()
-                    ->sortable(),
+                TextColumn::make('detail_layanans_count')
+                    ->label('Jumlah Layanan')
+                    ->badge()
+                    ->alignCenter()
+                    ->color('primary')
+                    ->sortable(), // Added sortable since you're using withCount()
                 Tables\Columns\TextColumn::make('total_biaya')
                     ->numeric()
+                    ->money('IDR')
+                    ->color('danger')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('jumlah_bayar')
+                    ->numeric()
+                    ->money('IDR')
+                    ->color('success')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('rating')
                     ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('id')
-                    ->label('Detail')
-                    ->formatStateUsing(function ($state, $record) {
-                        return '<a href="/admin/detail-layanans/create?layanan_id=' . $record->id . '" class="text-primary underline">Tambah Detail</a>';
-                    })
-                    ->html(),
-                    // TODO: Lanjutkan disini
+                    ->sortable()
+                    ->color(fn($state) => match (true) {
+                        $state >= 4 => 'success',
+                        $state >= 3 => 'warning',
+                        $state > 0  => 'danger',
+                        default     => null,
+                    }),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
