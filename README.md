@@ -1,61 +1,154 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🚗 ServiceKuy - Sistem Service Kendaraan - Project Belajar Filament
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+![Laravel](https://img.shields.io/badge/Laravel-FF2D20?logo=laravel&logoColor=white)
+![Filament](https://img.shields.io/badge/Filament-FF5722?logo=filamentphp&logoColor=white)
 
-## About Laravel
+Project belajar membangun **CRUD Management System** untuk bengkel kendaraan menggunakan:
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+-   Laravel 12
+-   Filament PHP 3.x
+-   MySQL
+-   Tailwind CSS
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 📋 Daftar Isi
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+-   [Fitur](#-fitur)
+-   [Struktur Database](#-struktur-database)
+-   [Panduan Instalasi](#%EF%B8%8F-panduan-instalasi)
+-   [Cara Penggunaan](#-cara-penggunaan)
+-   [Tim Pengembang](#-tim-pengembang)
 
-## Learning Laravel
+## 🌟 Fitur
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+-   **Manajemen Layanan**
+    -   CRUD layanan kendaraan
+    -   Upload foto kendaraan
+    -   Status layanan (Pending/Proses/Selesai)
+-   **Manajemen Montir**
+    -   Assign montir ke layanan
+    -   Tracking pekerjaan
+-   **Sistem Pembayaran**
+    -   Hitung total biaya otomatis
+    -   Validasi pembayaran
+-   **Role-based Access**
+    -   Admin
+    -   Manager
+    -   Montir
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## 🗃️ Struktur Database
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+![Diagram ERD](./public/images/erd-diagram.png) _(Ganti dengan path gambar ERD Anda)_
 
-## Laravel Sponsors
+Tabel utama:
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+1. `layanans` - Data layanan kendaraan
+2. `detail_layanans` - Detail pekerjaan per layanan
+3. `montirs` - Data montir
+4. `users` - User admin/manager
 
-### Premium Partners
+## 🛠️ Panduan Instalasi
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### Prasyarat
 
-## Contributing
+-   PHP 8.3+
+-   Composer 2.5+
+-   Node.js 18+
+-   MySQL 8.0+
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Langkah 1: Clone Repository
 
-## Code of Conduct
+```bash
+git clone https://github.com/username/project-bengkel.git
+cd project-bengkel
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### Langkah 2: Install Dependencies
 
-## Security Vulnerabilities
+```bash
+composer install
+npm install
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Langkah 3: Setup Environment
 
-## License
+```bash
+cp .env.example .env
+php artisan key:generate
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Edit file `.env` sesuai kebutuhan, misal:
+
+```env
+DB_DATABASE=db_bengkel
+DB_USERNAME=root
+DB_PASSWORD=
+APP_URL=http://localhost:8000
+```
+
+### Langkah 4: Jalankan Migrasi
+
+```bash
+php artisan migrate --seed
+```
+
+Seeder akan membuat:
+
+-   1 admin (`admin@gmail.com` / `admin123`)
+-   5 data montir
+-   10 data layanan contoh
+
+### Langkah 5: Build Assets
+
+```bash
+npm run build
+```
+
+### Langkah 6: Jalankan Aplikasi
+
+```bash
+php artisan serve
+```
+
+Buka: [http://localhost:8000](http://localhost:8000)
+
+## 🖥️ Cara Penggunaan
+
+1. **Login**
+
+-   Gunakan credential default:
+    -   **Email:** `admin@gmail.com`
+    -   **Password:** `admin123`
+
+2. **Tambah Layanan Baru**
+
+-   Navigasi ke menu **Layanan** > **Tambah Baru**
+-   Isi form layanan:
+    -   Upload foto kendaraan
+    -   Tambah detail pekerjaan dan pilih montir
+-   Sistem akan otomatis menghitung total biaya
+
+3. **Update Status Layanan**
+
+-   Ubah status layanan sesuai progres:
+    -   `Pending` → `Proses` → `Selesai`
+
+## 👨‍💻 Tim Pengembang
+
+-   Raffi Ramadhan Tajudin
+
+## 📝 Catatan Belajar
+
+**Yang Sudah Dipelajari:**
+
+-   Membuat CRUD dengan Filament
+-   Relasi one-to-many
+-   Form repeater
+-   Validasi custom
+
+---
+
+## 📄 Hak Cipta
+
+-   Laravel® adalah merek dagang terdaftar milik Taylor Otwell.
+-   FilamentPHP® adalah merek dagang milik Dan Harrin dan kontributor Filament.
+-   Proyek ini hanya untuk tujuan pembelajaran dan tidak berafiliasi dengan pihak resmi Laravel maupun Filament.
