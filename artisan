@@ -5,14 +5,25 @@ use Illuminate\Foundation\Application;
 use Symfony\Component\Console\Input\ArgvInput;
 
 define('LARAVEL_START', microtime(true));
-
+  
 // Register the Composer autoloader...
 require __DIR__.'/vendor/autoload.php';
+require __DIR__.'/vendor/laravel/framework/src/Illuminate/Foundation/helpers.php';
+// Load the Dotenv library for environment variables...
+require __DIR__.'/vendor/vlucas/phpdotenv/src/Dotenv.php';
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+$dotenv->load();   
+// Check if the application is running in a console environment
+if (!isset($_SERVER['argv']) || !isset($_SERVER['argc'])) {
+    fwrite(STDERR, "This script can only be run from the command line.\n");
+    exit(1);
+    // Bootstrap Laravel and handle the command...
 
-// Bootstrap Laravel and handle the command...
 /** @var Application $app */
+
 $app = require_once __DIR__.'/bootstrap/app.php';
 
 $status = $app->handleCommand(new ArgvInput);
 
 exit($status);
+}
